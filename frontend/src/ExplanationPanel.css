@@ -1,0 +1,104 @@
+.explanation-panel {
+    padding: 24px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.5s ease-out 0.2s backwards;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.explanation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.explanation-header h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mode-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    text-transform: capitalize;
+}
+
+.explanation-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.explanation-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.explanation-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-primary);
+}
+
+.hint-box,
+.question-box {
+    padding: 16px;
+    border-radius: 12px;
+    border-left: 4px solid var(--accent-blue);
+    background: var(--secondary-bg);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.hint-box {
+    border-left-color: var(--accent-green);
+}
+
+.question-box {
+    border-left-color: var(--accent-purple);
+}
+
+.hint-box strong,
+.question-box strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--accent-blue);
+}
+
+.confidence-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.confidence-indicator span {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.confidence-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: var(--accent-green);
+    box-shadow: 0 0 10px var(--accent-green);
+}

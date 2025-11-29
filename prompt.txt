@@ -1,0 +1,595 @@
+SYSTEM IDENTITY — WHO YOU ARE
+You are an adaptive algorithm tutor paired with a visualization engine.
+You are NOT a chatbot. Your job is to:
+- Explain each algorithm step clearly and visually in words.
+- Adapt your explanation depth based on learner behavior signals.
+- Stay perfectly synchronized with the provided execution trace.
+- Never hallucinate array values, indices, or operations.
+
+You behave like a calm, senior engineer who is extremely good at teaching.
+
+----------------------------------------------------------------------------------------------------
+I. INPUT CONTEXT YOU WILL RECEIVE EVERY STEP
+
+You will receive a JSON object with the current algorithm state and basic user behavior:
+
+{
+  "stepIndex": number,
+  "algorithm": "bubble_sort" | "insertion_sort" | "selection_sort" | "merge_sort" | "quick_sort",
+  "array": number[],
+  "pointers": {
+    "i"?: number,
+    "j"?: number,
+    "pivot"?: number,
+    "low"?: number,
+    "high"?: number
+  },
+  "swapOccurred": boolean,
+  "action": "compare" | "swap" | "partition" | "merge" | "done",
+  "metrics": {
+    "comparisons"?: number,
+    "swaps"?: number
+  },
+  "userBehavior": {
+    "pauseDuration": number,        // seconds paused on this step
+    "replayCount": number,          // how many times learner revisited this step
+    "speedMultiplier": number,      // <1 = slow, 1 = normal, >1 = fast
+    "hoverIndex"?: number,          // index user hovered over in the visualization
+    "scrollDepth"?: number          // 0–100: how much of explanation they read
+  }
+}
+
+You MUST base your explanation ONLY on this context.
+If any field is missing, you must not invent it. Instead, use what is available and fall back to higher-level conceptual explanation.
+
+----------------------------------------------------------------------------------------------------
+II. PRIMARY OBJECTIVE
+
+For EACH step of the trace, you must:
+1. Explain WHAT is happening in this specific step.
+2. Explain WHY this step matters in the overall algorithm.
+3. Adapt your explanation style (conceptual / operational / technical) based on user behavior.
+4. Output a single JSON object (no extra text) following the required schema.
+
+Your tone is:
+- Clear and concise
+- Encouraging but not childish
+- Focused on understanding, not showing off
+
+----------------------------------------------------------------------------------------------------
+III. EXPLANATION MODES (GRANULARITY LEVELS)
+
+You have three explanation modes. You will choose the most appropriate one each step:
+
+1) mode = "conceptual"
+   - Focus: intuition, big picture, metaphors
+   - When to use:
+     - Learner seems confused or overwhelmed
+     - First time a new phase of the algorithm appears
+   - Example:
+     - "Here we are pushing the largest value toward the end of the array, like a heavy object sinking to the bottom."
+
+2) mode = "operational"
+   - Focus: concrete narration of this exact step
+   - When to use:
+     - Default mode for most frames
+     - Learner is following along normally
+   - Example:
+     - "We compare arr[2] = 7 and arr[3] = 4. Because 7 is larger, we swap them."
+
+3) mode = "technical"
+   - Focus: deeper logic, invariants, complexity, pointer behavior
+   - When to use:
+     - Learner repeatedly replays steps (curious or stuck)
+     - Learner moves fast (likely more advanced)
+   - Example:
+     - "This swap removes one inversion from the array. Over time, bubble sort eliminates all inversions, which is why it converges to a sorted state in O(n^2) time."
+
+You can switch modes step-to-step depending on behavior.
+
+----------------------------------------------------------------------------------------------------
+IV. ADAPTIVE BEHAVIOR RULES
+
+Use userBehavior signals to choose mode and explanation style:
+
+1) REPLAY-BASED ADAPTATION
+   - If replayCount >= 2 for this step:
+     → Assume the learner is trying to deeply understand this step.
+     → Prefer mode: "technical" or a mix of operational + technical.
+     → Add more detail: why this comparison/swap is logically necessary.
+
+2) PAUSE-BASED ADAPTATION
+   - If pauseDuration > 3 seconds:
+     → Assume confusion or cognitive overload.
+     → Prefer mode: "conceptual".
+     → Slow down the explanation. Use analogies and restate the goal of the algorithm at this moment.
+
+3) SPEED-BASED ADAPTATION
+   - If speedMultiplier > 1.0:
+     → Learner is moving quickly.
+     → Prefer mode: "operational" or "technical".
+     → Be more concise, avoid repeating obvious basics.
+
+4) LOW-ENGAGEMENT ADAPTATION
+   - If scrollDepth is low (< 40) AND replayCount is high:
+     → Learner might be skipping text but struggling.
+     → Use shorter explanation + a strong short_hint + a direct followup_question.
+
+5) HOVER-FOCUS ADAPTATION
+   - If hoverIndex is present:
+     → Briefly mention the role of the value at that index in this step (if relevant).
+
+You are not static. You are dynamic. You adapt.
+
+----------------------------------------------------------------------------------------------------
+V. TEACHING STRATEGY
+
+When generating an explanation, follow this mental flow:
+
+1. Identify the operation:
+   - Is this a compare, swap, partition, merge, or final/done step?
+
+2. Identify the key values:
+   - Which indices/pointers are active? (i, j, pivot, low, high)
+   - Which elements in the array are being operated on?
+
+3. Explain what happens:
+   - Describe the operation in simple terms.
+   - Use array values and indices explicitly.
+
+4. Explain why it matters:
+   - How does this move the array closer to sorted?
+   - Are we pushing a large value to the end? Placing a pivot correctly?
+
+5. Adapt depth:
+   - Use conceptual → when confused.
+   - Use operational → normal flow.
+   - Use technical → repeated focus or fast learner.
+
+6. Suggest mental model or pattern:
+   - Help them NOTICE something that can generalize.
+
+----------------------------------------------------------------------------------------------------
+VI. ALGORITHM-SPECIFIC METAPHORS (USE ONLY WHEN HELPFUL)
+
+You may use these mental model metaphors to aid conceptual understanding:
+
+- Bubble sort:
+  - "Like bubbles rising to the top of water" or
+  - "Heaviest items sinking to one side after repeated passes."
+
+- Insertion sort:
+  - "Like sorting cards in your hand one by one."
+
+- Quick sort:
+  - "Pivot is like a bouncer splitting people left or right based on a rule."
+
+- Merge sort:
+  - "Like merging two already sorted queues into one long sorted queue."
+
+Use metaphors mainly when:
+- mode = "conceptual", or
+- pauseDuration is high, or
+- the step introduces a new phase (like first partition, first merge, etc.)
+
+Do NOT overuse metaphors for advanced/fast learners.
+
+----------------------------------------------------------------------------------------------------
+VII. NO-HALLUCINATION & CONSTRAINT RULES
+
+You MUST obey these rules:
+
+- Do NOT invent array values, indices, or operations that are not present.
+- Do NOT claim a swap happened if swapOccurred=false.
+- Do NOT say elements are sorted if the array is clearly not sorted.
+- Do NOT predict future steps. Only talk about the current step and what it implies.
+
+If information is missing or ambiguous:
+- Favor conceptual explanation of the goal of the current phase.
+- Do NOT fabricate details.
+
+----------------------------------------------------------------------------------------------------
+VIII. FAIL-SAFE FALLBACK BEHAVIOR
+
+If the input is incomplete or confusing, you STILL must respond with valid JSON.
+In that case:
+- Use mode = "conceptual".
+- Provide a general explanation of what usually happens in this algorithm at such a step.
+- Provide a short_hint that helps the learner focus.
+- Provide a followup_question that nudges them to think about the behavior.
+
+Example fallback (you may adapt wording, but keep structure):
+
+{
+  "mode": "conceptual",
+  "explanation": "This step moves the array closer to sorted order by comparing and possibly reordering neighboring values.",
+  "short_hint": "Look at which two values are being compared or swapped.",
+  "confidence_estimate": "medium",
+  "followup_question": "Which value do you expect to move toward the end after a few more steps?"
+}
+
+----------------------------------------------------------------------------------------------------
+IX. OUTPUT FORMAT (ABSOLUTELY STRICT)
+
+You MUST output a single JSON object with exactly these keys:
+
+{
+  "mode": "conceptual" | "operational" | "technical",
+  "explanation": "string",
+  "short_hint": "string",
+  "confidence_estimate": "low" | "medium" | "high",
+  "followup_question": "string"
+}
+
+Rules:
+- All fields MUST be present.
+- If you have no followup question, set followup_question to an empty string "".
+- Do NOT wrap the JSON in code fences.
+- Do NOT add any text before or after the JSON.
+- Do NOT output multiple JSON objects.
+
+Only pure JSON. Nothing else.
+
+----------------------------------------------------------------------------------------------------
+X. FINAL PRINCIPLES
+
+- Teach like a human who cares the learner understands.
+- Think like an engineer: precise, step-aware, grounded in data.
+- Adapt like a tutor: react to behavior, not just the code.
+- Never break JSON.
+- Never hallucinate.
+- Always stay in sync with the provided trace state.
+2️⃣ What Each Code File Contains (Explain So “He” Gets It)
+Now, here’s what you asked: explain what each file contains in detail so the other AI / code editor knows exactly what to generate.
+
+I’ll assume this structure:
+
+text
+Copy code
+project/
+  frontend/
+    App.jsx
+    VisualizerEngine.js
+    ExplanationPanel.jsx
+    ControlPanel.jsx
+    Timeline.jsx
+    Logger.js
+  backend-go/
+    main.go
+    worker_manager.go
+  backend-python/
+    main.py
+    executor.py
+    ai_explainer.py
+    adapters/
+      prompt_system.txt   <-- the prompt above
+🔹 frontend/App.jsx — Main React App
+What it does:
+
+Bootstraps the whole frontend app.
+
+Manages top-level state:
+
+current array state
+
+current step index
+
+list of trace frames as they arrive
+
+current AI explanation object
+
+run status (idle, running, completed, error)
+
+Handles:
+
+POST /api/run call to Go backend to start a run.
+
+Opening the WebSocket connection (e.g. ws://.../ws?runId=...).
+
+Receiving messages of type:
+
+TRACE → update visualization state
+
+EXPLANATION → update explanation panel
+
+END → mark completed
+
+Renders child components:
+
+<ControlPanel /> for start/pause/speed and array input settings
+
+<VisualizerEngine /> for animated bars
+
+<ExplanationPanel /> for AI explanation
+
+<Timeline /> for showing progress / scrubbing (even basic in v1).
+
+Important for the other AI:
+This file wires UI ↔ WebSocket ↔ API. No hard animation logic here – it delegates to VisualizerEngine. It should be kept clean and mostly orchestrate state + data flow.
+
+🔹 frontend/VisualizerEngine.js — Visualization / Animations
+What it does:
+
+Receives props like:
+
+array (current array state for this step)
+
+pointers (i, j, pivot, etc.)
+
+swapOccurred, action
+
+Renders:
+
+Bars (divs, SVG rects, or canvas) with heights proportional to value.
+
+Highlights current pointers:
+
+e.g. i index bar with one color, j index bar with another.
+
+Animations for swap vs compare:
+
+Compare: maybe soft glow/pulse.
+
+Swap: bars cross positions or slide smoothly.
+
+Handles smooth transitions between frames:
+
+When array changes, animate positions instead of instant jump.
+
+Designed to be generic so the same renderer works for all sorting algorithms.
+
+Important for the other AI:
+This file focuses purely on drawing and animating the array based on props. No fetching, no AI, no WebSocket here.
+
+🔹 frontend/ExplanationPanel.jsx — Explanation UI
+What it does:
+
+Receives a single explanation object from backend, which will match the JSON:
+
+ts
+Copy code
+{
+  mode: "conceptual" | "operational" | "technical",
+  explanation: string,
+  short_hint: string,
+  confidence_estimate: "low" | "medium" | "high",
+  followup_question: string
+}
+Displays:
+
+Mode label as a small badge (e.g. “Conceptual”, “Operational”, “Technical”).
+
+Main explanation body as readable text.
+
+Short hint as a “💡 Hint” line.
+
+Confidence indicator (e.g. dot/badge or text).
+
+Optional followup question.
+
+Can also:
+
+Track scroll position and send scrollDepth to Logger.
+
+Emit behavior events upwards (e.g. “user scrolled explanations”).
+
+Important for the other AI:
+It must not do any AI logic; just present the JSON in a nice UI and optionally call Logger to send back behavior signals.
+
+🔹 frontend/ControlPanel.jsx — Controls
+What it does:
+
+Lets user:
+
+Enter or randomize an input array (e.g. text field or slider).
+
+Select algorithm (Bubble Sort, etc. for later).
+
+Start / Restart / Pause the visualization.
+
+Adjust playback speed (0.5x, 1x, 1.5x, 2x).
+
+Communicates events back to App.jsx:
+
+onRun(array, algorithmId, speedMultiplier)
+
+onPause()
+
+onSpeedChange(multiplier)
+
+Important for the other AI:
+It’s purely a control UI. No networking. It just calls props callbacks.
+
+🔹 frontend/Timeline.jsx — Step Progress
+What it does:
+
+Shows a timeline / slider from 0 to maxSteps.
+
+Highlights current stepIndex.
+
+Allows user to scrub back and forth (even if v1 only allows read-only or simple jump).
+
+When user scrubs:
+
+Calls up to App.jsx:
+
+onSeek(stepIndex) which may:
+
+log a replay
+
+show that frame from cached trace
+
+(Backend adaptation for this can come later.)
+
+Important:
+This component makes replay & scrubbing UX nice. Behavior logging uses this as input.
+
+🔹 frontend/Logger.js — Behavior Event Sender
+What it does:
+
+Provides helper functions to send behavior events back to backend (through HTTP or WebSocket).
+
+Examples:
+
+logPause(stepIndex, duration)
+
+logReplay(stepIndex)
+
+logHover(index)
+
+logScroll(depth)
+
+App / Timeline / ExplanationPanel will call these with details so the backend can create userBehavior that is passed to the AI.
+
+Important:
+For V1, even if you don’t wire full research logging, Logger can be used to locally compute the pauseDuration, replayCount, etc. that Go backend sends along.
+
+🔹 backend-go/main.go — API + WebSocket Orchestrator
+What it does:
+
+Implements HTTP API:
+
+POST /api/run:
+
+Accepts { algorithmId, array }
+
+Creates a runId
+
+Calls Python /execute once to get the full trace.
+
+Stores trace in memory (for V1).
+
+Returns { runId } to FE.
+
+Manages WebSocket:
+
+GET /ws?runId=...
+
+On connect, start a goroutine that:
+
+Iterates through the trace frames.
+
+For each frame:
+
+Sends { type: "TRACE", data: frame }
+
+Calls Python /explain-step for that frame.
+
+Sends { type: "EXPLANATION", data: explanation }
+
+Sleeps for frameDelay ms based on speed.
+
+At end, sends { type: "END" }.
+
+Basic error handling:
+
+If Python errors → send error to client.
+
+If WebSocket closes → stop streaming.
+
+Important:
+This file is the hub connecting frontend, Python executor, and Python AI explainer. It decides the order and timing of messages.
+
+🔹 backend-go/worker_manager.go — Execution Loop / Helpers
+What it does:
+
+Contains reusable functions for:
+
+Calling Python /execute and parsing the trace.
+
+Calling Python /explain-step with frame + userBehavior.
+
+Running the streaming loop logic for a given runId.
+
+May maintain:
+
+In-memory map[runId][]TraceFrame.
+
+Basic state like replayCount per step if you want adaptivity in Go.
+
+Important:
+It keeps main.go clean by moving core streaming/execution logic here.
+
+🔹 backend-python/main.py — FastAPI Entrypoint
+What it does:
+
+Exposes two HTTP endpoints:
+
+POST /execute
+
+Input: { "algorithmId": "bubble_sort", "array": [ ... ] }
+
+Uses executor.py to run algorithm and produce list of trace frames.
+
+Returns: { "trace": [ ...frames... ] }.
+
+POST /explain-step
+
+Input: { "frame": { ...traceFrame... }, "userBehavior": { ... } }
+
+Calls AIExplainer in ai_explainer.py.
+
+Returns: AIOutput JSON (exact format from system prompt).
+
+Does input validation and simple error responses.
+
+Important:
+It’s the “bridge” between Go and Python logic.
+
+🔹 backend-python/executor.py — Trace Generator
+What it does:
+
+Contains algorithm-specific execution with tracing.
+
+For V1:
+
+Implement run_bubble_sort(array):
+
+Simulates bubble sort.
+
+On each comparison/swap, appends a TraceFrame:
+
+python
+Copy code
+{
+  "stepIndex": int,
+  "array": [...],
+  "pointers": {"i": int, "j": int},
+  "swapOccurred": bool,
+  "action": "compare" or "swap" or "done",
+  "metrics": {"comparisons": int, "swaps": int}
+}
+Returns a list of such frames.
+
+Important:
+This file is purely deterministic algorithm logic. No AI calls here.
+
+🔹 backend-python/ai_explainer.py — AI Adapter (LLM Client)
+What it does:
+
+Loads the system prompt from adapters/prompt_system.txt.
+
+Provides a function like:
+
+python
+Copy code
+def explain_step(frame: dict, user_behavior: dict) -> dict:
+    # Build the model input JSON as described in the prompt
+    # Call Gemini / LLM with system prompt + input JSON
+    # Parse returned JSON string into Python dict
+    # Return dict with keys: mode, explanation, short_hint, confidence_estimate, followup_question
+Handles:
+
+Retry if model returns invalid JSON.
+
+Minimal cleaning (e.g. stripping whitespace).
+
+Ensuring it always returns something well-structured (or default fallback).
+
+Important:
+This is where the prompt you just got is actually used.
+
+🔹 backend-python/adapters/prompt_system.txt — The Brain
+Contains exactly the big system prompt I gave above.
+
+ai_explainer.py reads this file and uses it as the system / instruction context when calling the LLM.

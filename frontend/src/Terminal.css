@@ -1,0 +1,296 @@
+/* Terminal.css - Premium Terminal Styling */
+
+.terminal-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1d2e 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+}
+
+.terminal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: linear-gradient(90deg, #1a1d2e 0%, #151824 100%);
+    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+}
+
+.terminal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: #64ffda;
+    font-size: 15px;
+}
+
+.terminal-icon {
+    font-size: 18px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.terminal-badge {
+    padding: 3px 8px;
+    background: rgba(100, 255, 218, 0.15);
+    border-radius: 10px;
+    font-size: 11px;
+    color: #64ffda;
+    font-weight: 500;
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.terminal-filter {
+    padding: 5px 12px;
+    background: rgba(100, 255, 218, 0.05);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 6px;
+    color: #64ffda;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.terminal-filter:hover {
+    background: rgba(100, 255, 218, 0.1);
+    border-color: rgba(100, 255, 218, 0.3);
+}
+
+.terminal-btn {
+    padding: 5px 12px;
+    background: rgba(100, 255, 218, 0.08);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 6px;
+    color: #64ffda;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.terminal-btn:hover {
+    background: rgba(100, 255, 218, 0.15);
+    border-color: rgba(100, 255, 218, 0.4);
+    transform: translateY(-1px);
+}
+
+.terminal-btn.active {
+    background: rgba(100, 255, 218, 0.2);
+    border-color: rgba(100, 255, 218, 0.5);
+}
+
+.terminal-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: #0a0e27;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Custom Scrollbar */
+.terminal-output::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+    background: rgba(100, 255, 218, 0.05);
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+    background: rgba(100, 255, 218, 0.2);
+    border-radius: 4px;
+}
+
+.terminal-output::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 255, 218, 0.3);
+}
+
+.terminal-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: rgba(100, 255, 218, 0.4);
+    text-align: center;
+}
+
+.terminal-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.terminal-line-default,
+.terminal-line-info,
+.terminal-line-success,
+.terminal-line-error,
+.terminal-line-warning,
+.terminal-line-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 4px 0;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.terminal-line-icon {
+    flex-shrink: 0;
+    width: 20px;
+    font-size: 14px;
+}
+
+.terminal-timestamp {
+    flex-shrink: 0;
+    color: rgba(100, 255, 218, 0.5);
+    font-size: 11px;
+}
+
+.terminal-line-text {
+    flex: 1;
+    word-break: break-word;
+}
+
+/* Line type colors */
+.terminal-line-default {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.terminal-line-default .terminal-line-icon {
+    color: #64ffda;
+}
+
+.terminal-line-info {
+    color: #64b5f6;
+}
+
+.terminal-line-info .terminal-line-icon {
+    color: #42a5f5;
+}
+
+.terminal-line-success {
+    color: #81c784;
+}
+
+.terminal-line-success .terminal-line-icon {
+    color: #66bb6a;
+}
+
+.terminal-line-error {
+    color: #e57373;
+    background: rgba(229, 115, 115, 0.05);
+    padding: 6px;
+    border-radius: 4px;
+    margin: 2px 0;
+}
+
+.terminal-line-error .terminal-line-icon {
+    color: #ef5350;
+}
+
+.terminal-line-warning {
+    color: #ffb74d;
+}
+
+.terminal-line-warning .terminal-line-icon {
+    color: #ffa726;
+}
+
+.terminal-line-step {
+    color: #ba68c8;
+    font-weight: 500;
+}
+
+.terminal-line-step .terminal-line-icon {
+    color: #ab47bc;
+}
+
+.terminal-status {
+    display: flex;
+    gap: 20px;
+    padding: 8px 16px;
+    background: #0a0e27;
+    border-top: 1px solid rgba(100, 255, 218, 0.1);
+    font-size: 11px;
+    color: rgba(100, 255, 218, 0.5);
+}
+
+.terminal-status span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .terminal-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .terminal-controls {
+        justify-content: space-between;
+    }
+
+    .terminal-status {
+        flex-wrap: wrap;
+    }
+}
+
+/* Loading animation */
+.terminal-loading {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #64ffda;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+}
