@@ -1,0 +1,12 @@
+
+--- New Execution ---
+Input Array: [1, 2, 3, 4, 5]
+Tracked Array Init: [1, 2, 3, 4, 5]
+Execution Result: [5, 4, 3, 2, 1]
+Final Array: [5, 4, 3, 2, 1]
+
+--- New Execution ---
+Input Array: [1, 2, 3, 4, 5]
+Tracked Array Init: [1, 2, 3, 4, 5]
+Execution Result: [5, 4, 3, 2, 1]
+Final Array: [5, 4, 3, 2, 1]

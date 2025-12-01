@@ -1,0 +1,18 @@
+.not-found {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-code {
+    font-size: 120px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.error-message {
+    font-size: var(--font-xl);
+    margin: var(--space-lg) 0 var(--space-xl);
+}

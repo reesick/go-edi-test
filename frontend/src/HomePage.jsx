@@ -58,6 +58,15 @@ export default function HomePage() {
 
     return (
         <div className="homepage">
+            <nav className="main-nav">
+                <div className="nav-logo">⚡ AlgoLearn</div>
+                <div className="nav-links">
+                    <button onClick={() => handleModeSelect('learn')}>Learn</button>
+                    <button onClick={() => handleModeSelect('practice')}>Practice</button>
+                    <button onClick={() => handleModeSelect('custom')}>Custom</button>
+                </div>
+            </nav>
+
             <header className="hero">
                 <h1 className="hero-title">✨ Algorithm Learning Platform</h1>
                 <p className="hero-subtitle">

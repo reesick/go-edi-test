@@ -11,7 +11,9 @@ export default function CodeEditor({
     onChange,
     language = 'python',
     readOnly = false,
-    onRun
+    onRun,
+    onReview,
+    onAnalyze
 }) {
     const [theme, setTheme] = useState('vs-dark');
     const [fontSize, setFontSize] = useState(14);
@@ -102,6 +104,18 @@ export default function CodeEditor({
                     <button className="editor-btn" onClick={handleCopyCode} title="Copy Code">
                         📋 Copy
                     </button>
+
+                    {/* AI Buttons */}
+                    {onReview && (
+                        <button className="editor-btn secondary" onClick={onReview} title="AI Code Review">
+                            🔍 Review
+                        </button>
+                    )}
+                    {onAnalyze && (
+                        <button className="editor-btn secondary" onClick={onAnalyze} title="Deep Analysis">
+                            🧠 Analyze
+                        </button>
+                    )}
 
                     {onRun && (
                         <button className="editor-btn-primary" onClick={onRun} title="Run Code">
