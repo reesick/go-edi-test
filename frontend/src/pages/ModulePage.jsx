@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Visualizer from '../components/Visualizer';
 import EditableCodePanel from '../components/EditableCodePanel';
 import TerminalOutput from '../components/TerminalOutput';
-import ControlBar from '../components/ControlBar';
 import './ModulePage.css';
 
 export default function ModulePage() {
@@ -20,7 +19,6 @@ export default function ModulePage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [terminalOutput, setTerminalOutput] = useState([]);
 
-    // Load module data from backend
     useEffect(() => {
         fetch(`http://localhost:8000/api/module/${moduleName}`)
             .then(res => res.json())
@@ -34,11 +32,9 @@ export default function ModulePage() {
             })
             .catch(err => {
                 console.error('Failed to load module:', err);
-                addTerminalOutput({ type: 'error', text: `Failed to load module: ${err.message}` });
             });
     }, [moduleName]);
 
-    // Update code when operation changes
     useEffect(() => {
         if (moduleData && currentOperation) {
             setCurrentCode(moduleData.code?.[currentOperation] || '');
@@ -55,7 +51,6 @@ export default function ModulePage() {
         setTerminalOutput(prev => [...prev, { ...line, timestamp }]);
     };
 
-    // Handle operation execution
     const handleExecute = async () => {
         if (!currentOperation || isRunning) return;
 
@@ -63,43 +58,8 @@ export default function ModulePage() {
         setTrace([]);
         setCurrentStep(0);
         setTerminalOutput([]);
-        addTerminalOutput({ type: 'info', text: '▶️ Validating code syntax...' });
+        addTerminalOutput({ type: 'info', text: '▶️ Compiling and executing...' });
 
-        // Step 1: Validate syntax first
-        try {
-            const validateRes = await fetch('http://localhost:8000/api/validate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: currentCode })
-            });
-
-            const validateData = await validateRes.json();
-
-            if (!validateData.valid) {
-                addTerminalOutput({
-                    type: 'error',
-                    text: `❌ Syntax Error: ${validateData.error}`
-                });
-                if (validateData.line) {
-                    addTerminalOutput({
-                        type: 'error',
-                        text: `   at line ${validateData.line}`
-                    });
-                }
-                setIsRunning(false);
-                return;
-            }
-
-            addTerminalOutput({ type: 'success', text: '✓ Syntax validation passed' });
-        } catch (err) {
-            addTerminalOutput({ type: 'error', text: `❌ Validation failed: ${err.message}` });
-            setIsRunning(false);
-            return;
-        }
-
-        addTerminalOutput({ type: 'info', text: '▶️ Executing your code...' });
-
-        // Step 2: Execute the code
         try {
             const res = await fetch('http://localhost:8000/api/execute', {
                 method: 'POST',
@@ -114,36 +74,16 @@ export default function ModulePage() {
             const data = await res.json();
 
             if (data.error) {
-                addTerminalOutput({ type: 'error', text: `❌ Error: ${data.error}` });
+                addTerminalOutput({ type: 'error', text: `❌ ${data.error}` });
                 setIsRunning(false);
                 return;
             }
 
-            // Show output if any
-            if (data.output) {
-                if (data.output.stdout) {
-                    addTerminalOutput({ type: 'success', text: data.output.stdout });
-                }
-                if (data.output.stderr) {
-                    addTerminalOutput({ type: 'error', text: data.output.stderr });
-                }
-                if (data.output.execution_time) {
-                    addTerminalOutput({
-                        type: 'info',
-                        text: `⏱️ Execution time: ${data.output.execution_time.toFixed(3)}s`
-                    });
-                }
-            }
-
             setTrace(data.trace || []);
-            addTerminalOutput({
-                type: 'success',
-                text: `✓ Generated ${data.trace?.length || 0} animation steps from YOUR code`
-            });
+            addTerminalOutput({ type: 'success', text: `✓ Generated ${data.trace?.length || 0} steps` });
 
             if (data.trace && data.trace.length > 0) {
                 setIsPlaying(true);
-                addTerminalOutput({ type: 'info', text: 'Starting visualization...' });
             }
         } catch (err) {
             addTerminalOutput({ type: 'error', text: `❌ ${err.message}` });
@@ -152,50 +92,60 @@ export default function ModulePage() {
         }
     };
 
-    // Animation loop
+    // Animation loop - FIXED to show last step
     useEffect(() => {
-        if (!isPlaying || currentStep >= trace.length) {
-            if (isPlaying && currentStep >= trace.length) {
-                addTerminalOutput({ type: 'success', text: '✓ Visualization complete!' });
-            }
+        if (!isPlaying || trace.length === 0) return;
+
+        // Stop AFTER showing the last step (not before)
+        if (currentStep >= trace.length) {
             setIsPlaying(false);
+            setCurrentStep(trace.length - 1); // Stay on last frame
             return;
         }
 
         const timer = setTimeout(() => {
-            setCurrentStep(currentStep + 1);
+            setCurrentStep(prev => prev + 1);
         }, 1000 / speed);
 
         return () => clearTimeout(timer);
     }, [isPlaying, currentStep, trace.length, speed]);
 
     if (!moduleData) {
+        return <div className="module-page"><div className="container"><p>Loading...</p></div></div>;
+    }
+
+    if (!moduleData.operations || moduleData.operations.length === 0) {
         return (
             <div className="module-page">
-                <div className="container">
-                    <p className="text-center text-muted">Loading...</p>
-                </div>
+                <header className="module-header">
+                    <div className="container">
+                        <button onClick={() => navigate('/')} className="back-btn">← Back</button>
+                        <h1>{moduleData.name}</h1>
+                    </div>
+                </header>
             </div>
         );
     }
 
     return (
         <div className="module-page">
-            {/* Header */}
             <header className="module-header">
                 <div className="container">
-                    <button onClick={() => navigate('/')} className="back-btn">
-                        ← Back to Home
-                    </button>
+                    <button onClick={() => navigate('/')} className="back-btn">← Back</button>
                     <h1 className="module-title">{moduleData.name}</h1>
+                    {moduleData.operations && moduleData.operations.length > 1 && (
+                        <select value={currentOperation} onChange={(e) => setCurrentOperation(e.target.value)} className="operation-select">
+                            {moduleData.operations.map(op => (
+                                <option key={op.id} value={op.id}>{op.name}</option>
+                            ))}
+                        </select>
+                    )}
                 </div>
             </header>
 
-            {/* Main Content */}
             <div className="module-content">
                 <div className="container">
                     <div className="module-grid">
-                        {/* Left: Code Panel */}
                         <div className="panel code-section">
                             <EditableCodePanel
                                 initialCode={currentCode}
@@ -205,37 +155,31 @@ export default function ModulePage() {
                             />
                         </div>
 
-                        {/* Right Top: Visualizer */}
                         <div className="panel viz-section">
                             <Visualizer
                                 module={moduleName}
-                                data={trace[currentStep]?.data}
-                                highlights={trace[currentStep]?.highlights || []}
+                                data={trace[Math.min(currentStep, trace.length - 1)]?.data}
+                                highlights={trace[Math.min(currentStep, trace.length - 1)]?.highlights || []}
+                                controlsProps={{
+                                    isPlaying,
+                                    onPlayPause: () => setIsPlaying(!isPlaying),
+                                    currentStep,
+                                    totalSteps: trace.length,
+                                    speed,
+                                    onSpeedChange: setSpeed,
+                                    onStepChange: setCurrentStep
+                                }}
                             />
                         </div>
 
-                        {/* Right Bottom: Terminal */}
                         <div className="panel terminal-section">
                             <TerminalOutput
                                 output={terminalOutput}
                                 onClear={() => setTerminalOutput([])}
+                                onAddOutput={addTerminalOutput}
                             />
                         </div>
                     </div>
-
-                    {/* Controls */}
-                    <ControlBar
-                        operations={moduleData.operations || []}
-                        currentOperation={currentOperation}
-                        onOperationChange={setCurrentOperation}
-                        isPlaying={isPlaying}
-                        onPlayPause={() => setIsPlaying(!isPlaying)}
-                        onExecute={handleExecute}
-                        speed={speed}
-                        onSpeedChange={setSpeed}
-                        currentStep={currentStep}
-                        totalSteps={trace.length}
-                    />
                 </div>
             </div>
         </div>

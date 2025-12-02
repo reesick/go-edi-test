@@ -1,8 +1,4 @@
-import { useState } from 'react';
-import Editor from 'react-simple-code-editor';
-import { highlight, languages } from 'prismjs';
-import 'prismjs/components/prism-python';
-import 'prismjs/themes/prism-tomorrow.css';
+import { useState, useEffect } from 'react';
 import './EditableCodePanel.css';
 
 export default function EditableCodePanel({
@@ -14,7 +10,13 @@ export default function EditableCodePanel({
     const [code, setCode] = useState(initialCode);
     const [isDirty, setIsDirty] = useState(false);
 
-    const handleCodeChange = (newCode) => {
+    useEffect(() => {
+        setCode(initialCode);
+        setIsDirty(false);
+    }, [initialCode]);
+
+    const handleCodeChange = (e) => {
+        const newCode = e.target.value;
         setCode(newCode);
         setIsDirty(true);
         if (onCodeChange) {
@@ -36,12 +38,26 @@ export default function EditableCodePanel({
             e.preventDefault();
             if (onRun) onRun();
         }
+
+        // Tab support
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = e.target.selectionStart;
+            const end = e.target.selectionEnd;
+            const newCode = code.substring(0, start) + '    ' + code.substring(end);
+            setCode(newCode);
+            if (onCodeChange) onCodeChange(newCode);
+
+            setTimeout(() => {
+                e.target.selectionStart = e.target.selectionEnd = start + 4;
+            }, 0);
+        }
     };
 
     return (
         <div className="editable-code-panel">
             <div className="code-header">
-                <h3>Code</h3>
+                <h3>Code (C++)</h3>
                 <div className="code-actions">
                     {isDirty && (
                         <button
@@ -63,25 +79,20 @@ export default function EditableCodePanel({
             </div>
 
             <div className="code-editor-wrapper">
-                <Editor
+                <textarea
                     value={code}
-                    onValueChange={handleCodeChange}
-                    highlight={code => highlight(code, languages.python, 'python')}
-                    padding={16}
+                    onChange={handleCodeChange}
                     onKeyDown={handleKeyDown}
-                    className="code-editor"
-                    style={{
-                        fontFamily: '"Monaco", "Menlo", "Consolas", monospace',
-                        fontSize: 14,
-                        lineHeight: 1.6,
-                        minHeight: '400px',
-                    }}
-                    textareaClassName="code-textarea"
+                    className="code-editor-plain"
+                    spellCheck="false"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
                 />
             </div>
 
             <div className="code-hint text-muted">
-                Press <kbd>Ctrl+Enter</kbd> to run code
+                Press <kbd>Ctrl+Enter</kbd> to compile and run • <kbd>Tab</kbd> to indent
             </div>
         </div>
     );

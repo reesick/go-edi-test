@@ -80,7 +80,7 @@
 
 .module-grid {
     display: grid;
-    grid-template-columns: 400px 1fr;
+    grid-template-columns: 550px 1fr;
     grid-template-rows: 1fr 280px;
     gap: var(--space-lg);
     margin-bottom: var(--space-xl);

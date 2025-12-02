@@ -1,0 +1,58 @@
+.action-insight {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.insight-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.insight-icon {
+    font-size: 20px;
+}
+
+.insight-title {
+    font-weight: 600;
+    color: #92400e;
+    font-size: 14px;
+}
+
+.insight-text {
+    color: #78350f;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Dark mode support */
+[data-theme="dark"] .action-insight {
+    background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+    border-left-color: #f59e0b;
+}
+
+[data-theme="dark"] .insight-title {
+    color: #fbbf24;
+}
+
+[data-theme="dark"] .insight-text {
+    color: #fde68a;
+}

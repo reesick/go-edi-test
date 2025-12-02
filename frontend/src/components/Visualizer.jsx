@@ -1,13 +1,17 @@
 import React from 'react';
+import VisualizerControls from './VisualizerControls';
 import './Visualizer.css';
 
-export default function Visualizer({ module, data, highlights = [] }) {
+export default function Visualizer({ module, data, highlights = [], controlsProps }) {
     if (!data) {
         return (
-            <div className="visualizer">
-                <div className="empty-viz">
-                    <p className="text-muted">Click "Execute" to see visualization</p>
+            <div className="visualizer-container">
+                <div className="visualizer">
+                    <div className="empty-viz">
+                        <p className="text-muted">Click "Run" to see visualization</p>
+                    </div>
                 </div>
+                {controlsProps && <VisualizerControls {...controlsProps} />}
             </div>
         );
     }
@@ -17,6 +21,7 @@ export default function Visualizer({ module, data, highlights = [] }) {
         switch (module) {
             case 'array':
             case 'sorting':
+            case 'searching':
                 return <ArrayVisualizer data={data} highlights={highlights} />;
             case 'linkedlist':
                 return <LinkedListVisualizer data={data} highlights={highlights} />;
@@ -30,8 +35,11 @@ export default function Visualizer({ module, data, highlights = [] }) {
     };
 
     return (
-        <div className="visualizer">
-            {renderVisualization()}
+        <div className="visualizer-container">
+            <div className="visualizer">
+                {renderVisualization()}
+            </div>
+            {controlsProps && <VisualizerControls {...controlsProps} />}
         </div>
     );
 }
@@ -41,12 +49,22 @@ function ArrayVisualizer({ data, highlights }) {
     if (!Array.isArray(data)) return null;
 
     const maxVal = Math.max(...data, 1);
+    const minVal = Math.min(...data, 0);
+    const range = maxVal - minVal || 1;
+
+    // Minimum height to ensure small values are visible
+    const MIN_HEIGHT = 40;
+    const MAX_HEIGHT = 250;
+    const AVAILABLE_HEIGHT = MAX_HEIGHT - MIN_HEIGHT;
 
     return (
         <div className="array-viz">
             {data.map((value, index) => {
                 const isHighlighted = highlights.includes(index);
-                const height = (value / maxVal) * 200;
+
+                // Proportional scaling: map value to [MIN_HEIGHT, MAX_HEIGHT]
+                const normalizedValue = (value - minVal) / range;
+                const height = MIN_HEIGHT + (normalizedValue * AVAILABLE_HEIGHT);
 
                 return (
                     <div key={index} className="bar-wrapper">

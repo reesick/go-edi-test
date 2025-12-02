@@ -8,104 +8,124 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--space-md);
-    padding-bottom: var(--space-md);
+    padding: 16px;
     border-bottom: 1px solid var(--border);
 }
 
 .code-header h3 {
     margin: 0;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 .code-actions {
     display: flex;
-    gap: var(--space-sm);
+    gap: 8px;
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    color: var(--text-primary);
 }
 
 .btn-sm {
-    padding: var(--space-xs) var(--space-md);
-    font-size: var(--font-sm);
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .code-editor-wrapper {
     flex: 1;
     overflow: auto;
     background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
 }
 
-.code-editor {
-    min-height: 400px !important;
+.code-editor-plain {
+    width: 100%;
+    min-height: 400px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
 }
 
-.code-textarea {
-    outline: none !important;
-    caret-color: var(--accent) !important;
+/* Code display with line highlighting */
+.code-display {
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-primary);
 }
 
-/* Prism theme overrides for dark mode */
-[data-theme="dark"] .token.comment,
-[data-theme="dark"] .token.prolog,
-[data-theme="dark"] .token.doctype,
-[data-theme="dark"] .token.cdata {
-    color: #999;
+.code-line {
+    display: flex;
+    min-height: 22px;
+    transition: background-color 0.3s ease;
 }
 
-[data-theme="dark"] .token.punctuation {
-    color: #ccc;
+.code-line.highlighted {
+    background-color: rgba(100, 150, 255, 0.2);
+    border-left: 3px solid #4a9eff;
+    animation: pulse-line 1.5s ease-in-out infinite;
 }
 
-[data-theme="dark"] .token.property,
-[data-theme="dark"] .token.tag,
-[data-theme="dark"] .token.boolean,
-[data-theme="dark"] .token.number,
-[data-theme="dark"] .token.constant,
-[data-theme="dark"] .token.symbol,
-[data-theme="dark"] .token.deleted {
-    color: #f92672;
+@keyframes pulse-line {
+
+    0%,
+    100% {
+        background-color: rgba(100, 150, 255, 0.2);
+    }
+
+    50% {
+        background-color: rgba(100, 150, 255, 0.35);
+    }
 }
 
-[data-theme="dark"] .token.selector,
-[data-theme="dark"] .token.attr-name,
-[data-theme="dark"] .token.string,
-[data-theme="dark"] .token.char,
-[data-theme="dark"] .token.builtin,
-[data-theme="dark"] .token.inserted {
-    color: #a6e22e;
+.line-number {
+    min-width: 40px;
+    text-align: right;
+    padding-right: 12px;
+    color: var(--text-muted);
+    user-select: none;
+    font-size: 12px;
 }
 
-[data-theme="dark"] .token.operator,
-[data-theme="dark"] .token.entity,
-[data-theme="dark"] .token.url,
-[data-theme="dark"] .language-css .token.string,
-[data-theme="dark"] .style .token.string {
-    color: #66d9ef;
-}
-
-[data-theme="dark"] .token.atrule,
-[data-theme="dark"] .token.attr-value,
-[data-theme="dark"] .token.keyword {
-    color: #66d9ef;
-}
-
-[data-theme="dark"] .token.function,
-[data-theme="dark"] .token.class-name {
-    color: #e6db74;
+.line-content {
+    flex: 1;
+    white-space: pre;
 }
 
 .code-hint {
-    margin-top: var(--space-sm);
-    font-size: var(--font-sm);
-    text-align: right;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    padding: 12px 16px;
 }
 
-kbd {
-    display: inline-block;
+.code-hint kbd {
     padding: 2px 6px;
-    font-family: inherit;
-    font-size: 0.9em;
-    background: var(--bg-secondary);
+    background: var(--bg-tertiary);
     border: 1px solid var(--border);
     border-radius: 3px;
+    font-family: monospace;
+    font-size: 11px;
 }
