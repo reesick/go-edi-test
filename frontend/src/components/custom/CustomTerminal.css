@@ -1,0 +1,109 @@
+.custom-terminal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #0e0e0e;
+    border-radius: 8px;
+    border: 1px solid #333;
+    overflow: hidden;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.terminal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+}
+
+.terminal-title {
+    font-weight: 600;
+    color: #fff;
+    font-size: 13px;
+}
+
+.status-indicator {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-indicator.running {
+    color: #2ecc71;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-indicator.idle {
+    color: #7f8c8d;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.terminal-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    color: #e0e0e0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.terminal-placeholder {
+    color: #555;
+    font-style: italic;
+}
+
+.terminal-line {
+    margin-bottom: 4px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.terminal-success {
+    color: #2ecc71;
+}
+
+.terminal-error {
+    color: #e74c3c;
+}
+
+.terminal-warning {
+    color: #f39c12;
+}
+
+.terminal-info {
+    color: #3498db;
+}
+
+.terminal-default {
+    color: #bdc3c7;
+}
+
+/* Scrollbar styling */
+.terminal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-content::-webkit-scrollbar-track {
+    background: #0e0e0e;
+}
+
+.terminal-content::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+.terminal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

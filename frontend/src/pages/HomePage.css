@@ -109,6 +109,117 @@
     margin-top: auto;
 }
 
+.homepage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    border-bottom: 1px solid var(--border);
+    padding: var(--space-lg) 0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: var(--font-xl);
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0;
+}
+
+/* Hero */
+.hero {
+    padding: var(--space-2xl) 0;
+    text-align: center;
+}
+
+.hero-title {
+    margin-bottom: var(--space-md);
+}
+
+.hero-subtitle {
+    font-size: var(--font-lg);
+}
+
+/* Search */
+.search-section {
+    padding: var(--space-lg) 0;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 500px;
+    padding: var(--space-md);
+    font-size: var(--font-base);
+    display: block;
+    margin: 0 auto;
+}
+
+/* Modules Grid */
+.modules-section {
+    flex: 1;
+    padding: var(--space-xl) 0;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.module-card {
+    cursor: pointer;
+    position: relative;
+    padding: var(--space-xl);
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+}
+
+.module-name {
+    margin-bottom: var(--space-sm);
+}
+
+.module-desc {
+    font-size: var(--font-sm);
+    flex: 1;
+}
+
+.module-arrow {
+    position: absolute;
+    bottom: var(--space-lg);
+    right: var(--space-lg);
+    font-size: var(--font-xl);
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.2s;
+}
+
+.module-card:hover .module-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.no-results {
+    padding: var(--space-2xl);
+}
+
+/* Footer */
+.footer {
+    padding: var(--space-xl) 0;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+
 .footer p {
     margin: 0;
     font-size: var(--font-sm);
@@ -123,4 +234,32 @@
     .hero {
         padding: var(--space-xl) 0;
     }
+}
+
+/* Custom Code Card Styling */
+.module-card.custom-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border: 2px solid #667eea;
+}
+
+.module-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.module-name .beta-badge {
+    background: #f39c12;
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.module-card.custom-card:hover {
+    border-color: #764ba2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }

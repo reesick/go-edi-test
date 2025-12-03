@@ -27,6 +27,13 @@ const MODULES = [
         id: 'binaryheap',
         name: 'Binary Heap',
         description: 'Min/Max heap - insert, extract, heapify'
+    },
+    {
+        id: 'custom',
+        name: 'Custom Code 🛠️',
+        description: 'Write your own algorithms with AI-powered visualization',
+        isCustom: true,
+        badge: 'Beta'
     }
 ];
 
@@ -90,10 +97,13 @@ export default function HomePage() {
                         {filteredModules.map(module => (
                             <div
                                 key={module.id}
-                                className="module-card card"
-                                onClick={() => navigate(`/module/${module.id}`)}
+                                className={`module-card card ${module.isCustom ? 'custom-card' : ''}`}
+                                onClick={() => navigate(module.isCustom ? '/custom' : `/module/${module.id}`)}
                             >
-                                <h3 className="module-name">{module.name}</h3>
+                                <h3 className="module-name">
+                                    {module.name}
+                                    {module.badge && <span className="beta-badge">{module.badge}</span>}
+                                </h3>
                                 <p className="module-desc text-muted">{module.description}</p>
                                 <div className="module-arrow">→</div>
                             </div>
